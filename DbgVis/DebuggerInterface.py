@@ -34,6 +34,22 @@
 #
 ################################################################################
 
-from DbgVis import DbgVis
-from DbgVis import Visualizer
-from DbgVis import DebuggerInterface
+import sys
+
+class DebuggerInterface(object):
+    """Debugger Interface"""
+
+    def factory(type):
+        if type == "gdb":
+            import gdb
+            return DebuggerInterfaceGDB()
+        assert 0, "Wrong debugger or not yet supported: " + type
+    factory = staticmethod(factory)
+
+class DebuggerInterfaceGDB():
+    """GDB Debugger Interface"""
+
+    def readMemory(self, address, size):
+        # TODO: import gdb at a single, general place
+        import gdb
+        return gdb.selected_inferior().read_memory(address, size)
