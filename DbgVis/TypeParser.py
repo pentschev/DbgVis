@@ -37,6 +37,7 @@
 import gdb
 import numpy as np
 from DbgVis import Visualizer
+from DbgVis import DebuggerInterface
 
 class PyCVMat():
     """Python cv::Mat-like container"""
@@ -53,8 +54,6 @@ class PyCVMat():
         self.cols = obj['cols']
         self.flags = obj['flags']
         self.data = (str(obj['data']).split()[0])
-
-        print(self.data)
 
         # Three least significant bits identify depth
         self.depth = self.flags & self.openCVMaxDepth
@@ -85,7 +84,8 @@ class TypeParser():
         mat = PyCVMat(obj)
 
         size = mat.rows*mat.cols*mat.channels
-        mem = gdb.inferiors()[0].read_memory(int(mat.data, 16), size)
+        dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
+        mem = dbgInt.readMemory(int(mat.data, 16), size)
 
         ar = np.asarray(bytearray(mem))
         ar = ar.reshape(mat.rows, mat.cols, mat.channels)
