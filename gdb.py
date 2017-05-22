@@ -52,4 +52,21 @@ class show_cv_mat (gdb.Command):
         tp = TypeParser.TypeParser()
         tp.parse(img)
 
+class show_cv_mat_ptr (gdb.Command):
+    """Display a cv::Mat on the screen"""
+
+    def __init__ (self):
+        super (show_cv_mat_ptr, self).__init__ ("show_cv_mat_ptr", gdb.COMMAND_USER)
+
+    def invoke (self, args, from_tty):
+        argv = gdb.string_to_argv(args)
+
+        ptr = gdb.parse_and_eval(argv[0])
+        ptrAddress = gdb.Value(ptr)
+        ptrTyped = ptrAddress.cast(gdb.lookup_type('cv::Mat').pointer())
+
+        tp = TypeParser.TypeParser()
+        tp.parse(ptrTyped.dereference())
+
 show_cv_mat()
+show_cv_mat_ptr()
