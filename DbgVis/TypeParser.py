@@ -47,6 +47,22 @@ class PyCVMat():
     openCVMaxChannels = 512
     openCVMaxDepth = 7
     openCVDepthBits = 3
+    openCVTypeNames = { 0: 'CV_8U',
+                        1: 'CV_8S',
+                        2: 'CV_16U',
+                        3: 'CV_16S',
+                        4: 'CV_32S',
+                        5: 'CV_32F',
+                        6: 'CV_64F',
+                        7: 'CV_USRTYPE1' }
+    openCVTypeSizes = { 'CV_8U': 1,
+                        'CV_8S': 1,
+                        'CV_16U': 2,
+                        'CV_16S': 2,
+                        'CV_32S': 4,
+                        'CV_32F': 4,
+                        'CV_64F': 8,
+                        'CV_USRTYPE1': 0 }
 
     def __init__(self, obj):
         # cv::Mat's attributes
@@ -57,6 +73,11 @@ class PyCVMat():
 
         # Three least significant bits identify depth
         self.depth = self.flags & self.openCVMaxDepth
+
+        # Identify cv::Mat depth type and its respective byte size
+        self.typeName = self.openCVTypeNames[int(self.depth)]
+        self.bytes = self.openCVTypeSizes[self.typeName]
+
         # Max channels is 511, identified by 9 bits after depth
         self.channels = ((self.flags >> self.openCVDepthBits) &
                          (self.openCVMaxChannels-1)) + 1
@@ -83,7 +104,7 @@ class TypeParser():
     def cvMat2NumpyArray(self, obj):
         mat = PyCVMat(obj)
 
-        size = mat.rows*mat.cols*mat.channels
+        size = mat.rows * mat.cols * mat.channels * mat.bytes
         dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
         mem = dbgInt.readMemory(int(mat.data, 16), size)
 
