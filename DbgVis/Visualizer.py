@@ -48,10 +48,29 @@ class Visualizer(object):
 class VisualizerCV():
     """OpenCV Visualizer"""
 
-    def visualize(self, obj):
-        cv2.imshow('image', obj)
-        k = cv2.waitKey(0)
+    def passFunc(i, v):
+        pass
 
-        # ESC key closes window
-        if k == 27:
-            cv2.destroyAllWindows()
+    def visualize(self, obj):
+        cv2.namedWindow('image')
+
+        normalizeSwitch = 'Normalize Output:\n0 = OFF, 1 = ON'
+        cv2.createTrackbar(normalizeSwitch, 'image', 0, 1, self.passFunc)
+
+        while(True):
+            normalize = cv2.getTrackbarPos(normalizeSwitch, 'image')
+
+            if (normalize):
+                diff = obj.max() - obj.min()
+                adjustedObj = np.uint8(((obj - obj.min()) / diff) * 255)
+            else:
+                adjustedObj = obj
+
+            cv2.imshow('image', adjustedObj)
+            k = cv2.waitKey(1)
+
+            # ESC key closes window
+            if k == 27:
+                break
+
+        cv2.destroyAllWindows()
