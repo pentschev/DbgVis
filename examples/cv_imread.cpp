@@ -39,16 +39,14 @@
 #include <iostream>
 #include <string>
 
-void read_image(const std::string& s)
+cv::Mat read_image(const std::string& s)
 {
-    cv::Mat img = cv::imread(s);
-
-    std::cout << img.size() << std::endl;
+    return cv::imread(s);
 }
 
 int main(int argc, char *argv[])
 {
-    read_image("bansko.png");
+    cv::Mat img = read_image("bansko.png");
 
     return 0;
 }
