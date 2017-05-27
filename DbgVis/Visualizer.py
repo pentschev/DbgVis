@@ -69,6 +69,10 @@ class VisualizerCV():
             cv2.imshow('image', adjustedObj)
             k = cv2.waitKey(1)
 
+            if chr(k) == 's':
+                print ("writing")
+                cv2.imwrite("show_cv_mat_out.png", adjustedObj);
+
             # ESC key closes window
             if k == 27:
                 break
