@@ -68,6 +68,7 @@ class PyCVMat():
         # cv::Mat's attributes
         self.rows = obj['rows']
         self.cols = obj['cols']
+        self.step = obj['step']['buf'][0]
         self.flags = obj['flags']
         self.data = (str(obj['data']).split()[0])
 
@@ -104,15 +105,18 @@ class TypeParser():
     def cvMat2NumpyArray(self, obj):
         mat = PyCVMat(obj)
 
-        size = mat.rows * mat.cols * mat.channels * mat.bytes
+        size = mat.rows * mat.step
         dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
         mem = dbgInt.readMemory(int(mat.data, 16), size)
 
-        ar = np.asarray(bytearray(mem))
-        ar = ar.reshape(mat.rows, mat.cols, mat.channels)
+        img = np.asarray(bytearray(mem))
+
+        memCols = mat.step / mat.channels
+        img = img.reshape(mat.rows, memCols, mat.channels)
+        img = img[0:mat.rows, 0:mat.cols, :]
 
         vis = Visualizer.Visualizer().factory('opencv')
-        vis.visualize(ar)
+        vis.visualize(img)
 
     def parse (self, val):
         if (self.testCVMat(val)):
