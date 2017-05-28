@@ -44,9 +44,16 @@ cv::Mat read_image(const std::string& s)
     return cv::imread(s);
 }
 
+cv::Mat read_image_roi(const cv::Mat& img, cv::Rect roi)
+{
+    return cv::Mat(img(roi));
+}
+
 int main(int argc, char *argv[])
 {
     cv::Mat img = read_image("bansko.png");
+
+    cv::Mat img_roi = read_image_roi(img, cv::Rect(100, 100, 100, 100));
 
     return 0;
 }
