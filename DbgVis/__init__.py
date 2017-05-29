@@ -34,6 +34,5 @@
 #
 ################################################################################
 
-from DbgVis import DbgVis
 from DbgVis import Visualizer
 from DbgVis import DebuggerInterface

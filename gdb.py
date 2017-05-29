@@ -36,6 +36,7 @@
 
 import gdb
 from DbgVis import TypeParser
+from DbgVis import Visualizer
 
 class show_cv_mat (gdb.Command):
     """Display a cv::Mat on the screen"""
@@ -47,10 +48,13 @@ class show_cv_mat (gdb.Command):
         argv = gdb.string_to_argv(args)
 
         frame = gdb.selected_frame()
-        img = frame.read_var(argv[0])
+        frameImg = frame.read_var(argv[0])
 
         tp = TypeParser.TypeParser()
-        tp.parse(img)
+        img = tp.parse(frameImg)
+
+        vis = Visualizer.Visualizer().factory('opencv')
+        vis.visualize(img)
 
 class show_cv_mat_ptr (gdb.Command):
     """Display a cv::Mat on the screen"""
@@ -66,7 +70,10 @@ class show_cv_mat_ptr (gdb.Command):
         ptrTyped = ptrAddress.cast(gdb.lookup_type('cv::Mat').pointer())
 
         tp = TypeParser.TypeParser()
-        tp.parse(ptrTyped.dereference())
+        img = tp.parse(ptrTyped.dereference())
+
+        vis = Visualizer.Visualizer().factory('opencv')
+        vis.visualize(img)
 
 show_cv_mat()
 show_cv_mat_ptr()

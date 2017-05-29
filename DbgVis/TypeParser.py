@@ -34,9 +34,7 @@
 #
 ################################################################################
 
-import gdb
 import numpy as np
-from DbgVis import Visualizer
 from DbgVis import DebuggerInterface
 
 class PyCVMat():
@@ -115,11 +113,10 @@ class TypeParser():
         img = img.reshape(mat.rows, memCols, mat.channels)
         img = img[0:mat.rows, 0:mat.cols, :]
 
-        vis = Visualizer.Visualizer().factory('opencv')
-        vis.visualize(img)
+        return img
 
     def parse (self, val):
         if (self.testCVMat(val)):
-            self.cvMat2NumpyArray(val)
+            return self.cvMat2NumpyArray(val)
         else:
             raise TypeError("Couldn't identify type or type not supported")
