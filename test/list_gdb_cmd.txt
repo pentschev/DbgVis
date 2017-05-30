@@ -1,0 +1,5 @@
+break read_image
+run
+finish
+source ../gdb.py
+show_cv_mat img tester
