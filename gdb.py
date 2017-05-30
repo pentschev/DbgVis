@@ -50,10 +50,12 @@ class show_cv_mat (gdb.Command):
         frame = gdb.selected_frame()
         frameImg = frame.read_var(argv[0])
 
+        visType = argv[1] if len(argv) > 1 else 'opencv'
+
         tp = TypeParser.TypeParser()
         img = tp.parse(frameImg)
 
-        vis = Visualizer.Visualizer().factory('opencv')
+        vis = Visualizer.Visualizer().factory(visType)
         vis.visualize(img)
 
 class show_cv_mat_ptr (gdb.Command):
@@ -69,10 +71,12 @@ class show_cv_mat_ptr (gdb.Command):
         ptrAddress = gdb.Value(ptr)
         ptrTyped = ptrAddress.cast(gdb.lookup_type('cv::Mat').pointer())
 
+        visType = argv[1] if len(argv) > 1 else 'opencv'
+
         tp = TypeParser.TypeParser()
         img = tp.parse(ptrTyped.dereference())
 
-        vis = Visualizer.Visualizer().factory('opencv')
+        vis = Visualizer.Visualizer().factory(visType)
         vis.visualize(img)
 
 show_cv_mat()
