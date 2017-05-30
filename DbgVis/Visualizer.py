@@ -42,7 +42,8 @@ class Visualizer(object):
 
     def factory(type):
         if type == "opencv": return VisualizerCV()
-        assert 0, "Wrong or not supported visualizer type: " + type
+        if type == "tester": return VisualizerTester()
+        assert 0, "Wrong or not supported visualizer type '" + type + "'"
     factory = staticmethod(factory)
 
 class VisualizerCV():
@@ -70,11 +71,16 @@ class VisualizerCV():
             k = cv2.waitKey(1)
 
             if chr(k) == 's':
-                print ("writing")
-                cv2.imwrite("show_cv_mat_out.png", adjustedObj);
+                self.save(adjustedObj)
 
             # ESC key closes window
             if k == 27:
                 break
 
         cv2.destroyAllWindows()
+
+class VisualizerTester():
+    """Tester Visualizer"""
+
+    def visualize(self, obj):
+        cv2.imwrite('test_out.png', obj)
