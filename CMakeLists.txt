@@ -7,6 +7,7 @@ set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
     FORCE)
 
 find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(EXAMPLES_DIR examples)
 
