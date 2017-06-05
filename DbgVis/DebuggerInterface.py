@@ -53,3 +53,7 @@ class DebuggerInterfaceGDB():
         # TODO: import gdb at a single, general place
         import gdb
         return gdb.selected_inferior().read_memory(address, size)
+
+    def getPointerAddressFromValue(self, val):
+        import gdb
+        return val.cast(gdb.lookup_type('size_t'))

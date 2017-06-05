@@ -62,13 +62,16 @@ class PyCVMat():
                         'CV_64F': 8,
                         'CV_USRTYPE1': 0 }
 
-    def __init__(self, obj):
+    def __init__(self, obj, dbgInt=None):
         # cv::Mat's attributes
         self.rows = obj['rows']
         self.cols = obj['cols']
         self.step = obj['step']['buf'][0]
         self.flags = obj['flags']
-        self.data = (str(obj['data']).split()[0])
+
+        # Data can only be properly identified with a valid debugger interface
+        if dbgInt is not None:
+            self.data = dbgInt.getPointerAddressFromValue(obj['data'])
 
         # Three least significant bits identify depth
         self.depth = self.flags & self.openCVMaxDepth
@@ -101,11 +104,12 @@ class TypeParser():
         return True
 
     def cvMat2NumpyArray(self, obj):
-        mat = PyCVMat(obj)
+        dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
+
+        mat = PyCVMat(obj, dbgInt)
 
         size = mat.rows * mat.step
-        dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
-        mem = dbgInt.readMemory(int(mat.data, 16), size)
+        mem = dbgInt.readMemory(mat.data, size)
 
         img = np.asarray(bytearray(mem))
 
