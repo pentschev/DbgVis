@@ -1,0 +1,5 @@
+break read_image_roi
+run
+finish
+source ../gdb.py
+show_cv_mat img_roi tester
