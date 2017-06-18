@@ -35,6 +35,7 @@
 ################################################################################
 
 import gdb
+from DbgVis import DebuggerInterface
 from DbgVis import TypeParser
 from DbgVis import Visualizer
 
@@ -47,13 +48,16 @@ class show_cv_mat (gdb.Command):
     def invoke (self, args, from_tty):
         argv = gdb.string_to_argv(args)
 
-        frame = gdb.selected_frame()
-        frameImg = frame.read_var(argv[0])
+        dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
+
+        frame = dbgInt.getSelectedFrame()
+        frameImg = dbgInt.readVar(frame, argv[0])
 
         visType = argv[1] if len(argv) > 1 else 'opencv'
 
+
         tp = TypeParser.TypeParser()
-        img = tp.parse(frameImg)
+        img = tp.parse(frameImg, dbgInt)
 
         vis = Visualizer.Visualizer().factory(visType)
         vis.visualize(img)
@@ -67,6 +71,8 @@ class show_cv_mat_ptr (gdb.Command):
     def invoke (self, args, from_tty):
         argv = gdb.string_to_argv(args)
 
+        dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
+
         ptr = gdb.parse_and_eval(argv[0])
         ptrAddress = gdb.Value(ptr)
         ptrTyped = ptrAddress.cast(gdb.lookup_type('cv::Mat').pointer())
@@ -74,7 +80,7 @@ class show_cv_mat_ptr (gdb.Command):
         visType = argv[1] if len(argv) > 1 else 'opencv'
 
         tp = TypeParser.TypeParser()
-        img = tp.parse(ptrTyped.dereference())
+        img = tp.parse(ptrTyped.dereference(), dbgInt)
 
         vis = Visualizer.Visualizer().factory(visType)
         vis.visualize(img)

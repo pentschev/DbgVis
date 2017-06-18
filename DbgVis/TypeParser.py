@@ -62,16 +62,17 @@ class PyCVMat():
                         'CV_64F': 8,
                         'CV_USRTYPE1': 0 }
 
-    def __init__(self, obj, dbgInt=None):
+    def __init__(self, obj, dbgInt):
         # cv::Mat's attributes
-        self.rows = obj['rows']
-        self.cols = obj['cols']
-        self.step = obj['step']['buf'][0]
-        self.flags = obj['flags']
+        self.rows = dbgInt.readField(obj, 'rows')
+        self.cols = dbgInt.readField(obj, 'cols')
+        self.flags = dbgInt.readField(obj, 'flags')
+        stepField = dbgInt.readField(obj, 'step')
+        stepBuf = dbgInt.readField(stepField, 'buf')
+        self.step = dbgInt.readField(stepBuf, 0)
 
-        # Data can only be properly identified with a valid debugger interface
-        if dbgInt is not None:
-            self.data = dbgInt.getPointerAddressFromValue(obj['data'])
+        dataPtr = dbgInt.readField(obj, 'data')
+        self.data = dbgInt.getPointerAddressFromValue(dataPtr)
 
         # Three least significant bits identify depth
         self.depth = self.flags & self.openCVMaxDepth
@@ -87,8 +88,8 @@ class PyCVMat():
 class TypeParser():
     """Type Parser"""
 
-    def testCVMat(self, obj):
-        mat = PyCVMat(obj)
+    def testCVMat(self, obj, dbgInt):
+        mat = PyCVMat(obj, dbgInt)
 
         # OpenCV's magic value is 0x42ff0000, also packed in flags
         if (mat.flags & mat.openCVMagicValMask != mat.openCVMagicVal):
@@ -103,9 +104,7 @@ class TypeParser():
             return False
         return True
 
-    def cvMat2NumpyArray(self, obj):
-        dbgInt = DebuggerInterface.DebuggerInterface().factory('gdb')
-
+    def cvMat2NumpyArray(self, obj, dbgInt):
         mat = PyCVMat(obj, dbgInt)
 
         size = mat.rows * mat.step
@@ -119,8 +118,8 @@ class TypeParser():
 
         return img
 
-    def parse (self, val):
-        if (self.testCVMat(val)):
-            return self.cvMat2NumpyArray(val)
+    def parse(self, val, dbgInt):
+        if (self.testCVMat(val, dbgInt)):
+            return self.cvMat2NumpyArray(val, dbgInt)
         else:
             raise TypeError("Couldn't identify type or type not supported")
