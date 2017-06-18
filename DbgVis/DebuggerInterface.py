@@ -49,6 +49,18 @@ class DebuggerInterface(object):
 class DebuggerInterfaceGDB():
     """GDB Debugger Interface"""
 
+    def getSelectedFrame(self):
+        import gdb
+        return gdb.selected_frame()
+
+    def readVar(self, frame, name):
+        import gdb
+        return frame.read_var(name)
+
+    def readField(self, var, fieldName):
+        import gdb
+        return var[fieldName]
+
     def readMemory(self, address, size):
         # TODO: import gdb at a single, general place
         import gdb
