@@ -56,5 +56,12 @@ class DbgVisTest(unittest.TestCase):
         self.assertTrue(np.array_equal(testImg, baseImgRoi))
         os.remove("test_out.png")
 
+    def test_gdb_cvmat_ptr(self):
+        os.system("gdb ../build/cv_imread < list_gdb_cmd_ptr.txt > /dev/null")
+        baseImg = cv2.imread("../samples/bansko.png")
+        testImg = cv2.imread("test_out.png")
+        self.assertTrue(np.array_equal(testImg, baseImg))
+        os.remove("test_out.png")
+
 if __name__ == "__main__":
     unittest.main()

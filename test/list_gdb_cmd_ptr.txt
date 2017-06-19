@@ -1,0 +1,5 @@
+break finalize
+run
+finish
+source ../gdb.py
+show_cv_mat_ptr imgPtr tester

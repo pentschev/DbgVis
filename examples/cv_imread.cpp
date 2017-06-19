@@ -49,11 +49,25 @@ cv::Mat read_image_roi(const cv::Mat& img, cv::Rect roi)
     return cv::Mat(img(roi));
 }
 
+const cv::Mat* get_image_ptr(const cv::Mat& img)
+{
+    return &img;
+}
+
+void finalize()
+{
+}
+
 int main(int argc, char *argv[])
 {
     cv::Mat img = read_image("../samples/bansko.png");
 
     cv::Mat img_roi = read_image_roi(img, cv::Rect(100, 100, 100, 100));
+
+    const cv::Mat* imgPtr = get_image_ptr(img);
+
+    /// Just used as a breakpoint placeholder, do not remove
+    finalize();
 
     return 0;
 }
